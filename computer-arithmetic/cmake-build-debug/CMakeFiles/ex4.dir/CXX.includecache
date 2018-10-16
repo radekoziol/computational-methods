@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/radekkoziol/Projects/CLionProjects/mownit2/computer-arithmetic/ex4/ex4.cpp
+iostream
+-
+gsl/gsl_ieee_utils.h
+-
+cmath
+-
+

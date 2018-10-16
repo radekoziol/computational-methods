@@ -1,0 +1,14 @@
+
+    Porównać w języku Julia/C++ reprezentację bitową liczby 1/3 dla
+    Float32, Float64 oraz liczby, która jest inicjalizowana jako Float32,
+    a potem rzutowana na Float64.
+    W przypadku C++ należy odpowiednio zmodyfikować nazwy typów zmiennych oraz wykonać stosowne rzutowania.
+
+    Out:
+    **************************
+    f= 1.01010101010101010101011*2^-2
+    fd= 1.0101010101010101010101100000000000000000000000000000*2^-2
+    d= 1.0101010101010101010101010101010101010101010101010101*2^-2
+    **************************
+
+    Rzutowanie powoduje wypelnienie 'nowych bitów' '0'.

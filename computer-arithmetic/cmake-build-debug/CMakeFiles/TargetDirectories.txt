@@ -1,0 +1,7 @@
+/home/radekkoziol/Projects/CLionProjects/mownit2/computer-arithmetic/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/radekkoziol/Projects/CLionProjects/mownit2/computer-arithmetic/cmake-build-debug/CMakeFiles/ex3.dir
+/home/radekkoziol/Projects/CLionProjects/mownit2/computer-arithmetic/cmake-build-debug/CMakeFiles/ex2.dir
+/home/radekkoziol/Projects/CLionProjects/mownit2/computer-arithmetic/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/radekkoziol/Projects/CLionProjects/mownit2/computer-arithmetic/cmake-build-debug/CMakeFiles/ex1.dir
+/home/radekkoziol/Projects/CLionProjects/mownit2/computer-arithmetic/cmake-build-debug/CMakeFiles/ex4.dir
+/home/radekkoziol/Projects/CLionProjects/mownit2/computer-arithmetic/cmake-build-debug/CMakeFiles/lab1.dir

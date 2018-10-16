@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblab1.a  CMakeFiles/lab1.dir/ex1/ex1.cpp.o CMakeFiles/lab1.dir/ex2/ex2.cpp.o CMakeFiles/lab1.dir/ex3/ex3.cpp.o CMakeFiles/lab1.dir/ex4/ex4.cpp.o
+/usr/bin/ranlib liblab1.a

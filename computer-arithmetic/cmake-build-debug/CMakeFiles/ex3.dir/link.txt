@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/ex3.dir/ex3/ex3.cpp.o  -o ex3 -lgsl -lgslcblas -lm 

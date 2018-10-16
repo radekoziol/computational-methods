@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/ex1.dir/ex1/ex1.cpp.o  -o ex1 -lgsl -lgslcblas -lm 
