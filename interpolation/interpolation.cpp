@@ -140,6 +140,7 @@ namespace interpolation {
             return a * pow(t, 3) + b * pow(t, 2) + c * t + d;
         }
 
+
         // private members
     private:
         const PointsList2D &pointsList;
@@ -150,6 +151,16 @@ namespace interpolation {
     public:
         LagrangeInterpolation(const PointsList2D &points) : pointsList(points) {}
 
+        void Interpolate1D(const std::vector<float> &pointsToCalc) {
+
+            DividedDiff();
+
+            for (int i = 0; i < pointsToCalc.size(); i++) {
+                std::cout << "Value at " << pointsToCalc[i] << " = " << LaGrange(pointsToCalc[i]) << std::endl;
+            }
+
+        };
+
         void Interpolate1D(int pointsToInterpolate) override {
             // TASK2 : TODO
         };
@@ -159,6 +170,47 @@ namespace interpolation {
         };
 
     private:
+
+        std::vector<float> dividedDiff;
+
+        float DividedDiff() {
+
+            dividedDiff.push_back(pointsList[0][1]);
+            dividedDiff.push_back((pointsList[1][1] - pointsList[0][1])/(pointsList[1][0] - pointsList[0][0]));
+
+            calcDividedDiffRec(2);
+        }
+
+        void calcDividedDiffRec(int counter) {
+
+            if (counter == pointsList.size()) {
+                return;
+            }
+
+            dividedDiff.push_back((dividedDiff[counter] - dividedDiff[counter - 1]) /
+                                  (pointsList[0][counter] - pointsList[0][counter - 1]));
+            calcDividedDiffRec(counter+1);
+        }
+
+        float LaGrange(float x) const {
+
+            float returnSum = 0.0;
+
+
+            for (int i = 0; i < pointsList.size(); i++) {
+
+                float newtonProduct = 1.0;
+                for (int j = 0; j < i; j++) {
+                    newtonProduct *= (x - pointsList[0][j]);
+                }
+
+                returnSum += dividedDiff[i] * newtonProduct;
+            }
+
+
+            return returnSum;
+        }
+
         const PointsList2D &pointsList;
     };
 }
@@ -177,15 +229,31 @@ int main() {
                     {6.8f, 0.0f}
             };
 
+    const std::vector<float> pointsToCalc =
+            {
+                    {0.1f},
+                    {0.2f},
+                    {0.3f},
+                    {0.4f},
+                    {0.5f},
+                    {0.6f},
+                    {0.7f}
+            };
+
 //    std::unique_ptr<interpolation::CubicInterpolation> interpolation2D =
 //            std::make_unique<interpolation::CubicInterpolation>(interpolation::CubicInterpolation(points2D));
 //
 //    interpolation2D->Interpolate2D(13);
 
-    std::unique_ptr<interpolation::CubicInterpolation> interpolation1D =
-            std::make_unique<interpolation::CubicInterpolation>(interpolation::CubicInterpolation(points2D));
+//    std::unique_ptr<interpolation::CubicInterpolation> interpolation1D =
+//            std::make_unique<interpolation::CubicInterpolation>(interpolation::CubicInterpolation(points2D));
+//
+//    interpolation1D->Interpolate1D(13);
 
-    interpolation1D->Interpolate1D(13);
+    std::unique_ptr<interpolation::LagrangeInterpolation> interpolation1D =
+            std::make_unique<interpolation::LagrangeInterpolation>(interpolation::LagrangeInterpolation(points2D));
+
+    interpolation1D->Interpolate1D(pointsToCalc);
 
 
     return 0;
