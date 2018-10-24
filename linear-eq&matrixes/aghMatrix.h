@@ -37,7 +37,13 @@ public:
 
     bool isSymmetric();
 
-    double det();
+    double determinant();
+
+    void make_matrix_lower_triangular();
+
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> LUDecomposition();
+
+    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> CholeskyDecomposition();
 };
 
 #include "aghMatrix.cpp"

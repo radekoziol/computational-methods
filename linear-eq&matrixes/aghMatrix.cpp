@@ -1,4 +1,7 @@
+#include <cmath>
 #include "aghMatrix.h"
+
+#define wrong_type_of_matrix 0
 
 // Parameter Constructor
 template<typename T>
@@ -167,7 +170,7 @@ bool AGHMatrix<T>::isSymmetric() {
     for (unsigned i = 0; i < get_rows(); i++) {
 
         for (unsigned j = 0; j < get_cols(); j++) {
-            if(matrix[i][j] != matrix[j][i]){
+            if (matrix[i][j] != matrix[j][i]) {
                 return false;
             }
         }
@@ -177,13 +180,122 @@ bool AGHMatrix<T>::isSymmetric() {
 }
 
 template<typename T>
-double AGHMatrix<T>::det() {
+void AGHMatrix<T>::make_matrix_lower_triangular() {
 
+
+    for (int i = 1; i < matrix.size(); i++) {
+
+        for (int j = 0; j < matrix.size(); j++) {
+
+            double t = -matrix[j][i] / matrix[i][i];
+
+            for (int k = 0; k < matrix.size(); k++) {
+                matrix[j][k] = t * matrix[i][k];
+            }
+        }
+    }
 
 }
 
 
-// Printing matrix                                                                                                                        
+template<typename T>
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> AGHMatrix<T>::LUDecomposition() {
+
+    std::vector<std::vector<double>> A(matrix.size(), std::vector<double>(matrix.size(), 0.0));
+    std::vector<std::vector<double>> B = A;
+
+    for (int i = 0; i < matrix.size(); i++) {
+
+        for (int j = i + 1; j < matrix.size(); j++) {
+
+            double sumA = 0.0;
+            double sumB = 0.0;
+
+            for (int k = 1; k < i - 1; k++) {
+                sumA += A[i][k] * B[k][j];
+                sumB += A[j][k] * B[k][i];
+            }
+
+            A[i][j] = matrix[i][j] - sumA;
+            B[j][i] = (matrix[i][j] - sumB) / (A[i][j]);
+
+        }
+    }
+
+
+    return std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>(A, B);
+
+}
+
+
+template<typename T>
+std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> AGHMatrix<T>::CholeskyDecomposition() {
+
+    std::vector<std::vector<double>> L(matrix.size(), std::vector<double>(matrix.size(), 0.0));
+    std::vector<std::vector<double>> L_T = L;
+
+    for (int i = 0; i < matrix.size(); i++) {
+
+        for (int j = i + 1; j < matrix.size(); j++) {
+
+            double sumL1 = 0.0;
+            double sumL2 = 0.0;
+
+            for (int k = 1; k < j - 1; k++) {
+                sumL1 += L[j][k] * L[j][k];
+                sumL2 += L[i][k] * L[j][k];
+            }
+
+            if (i > j) {
+                L[j][j] = sqrt(matrix[j][j] - sumL1);
+                L_T[j][j] = L[j][j];
+            }
+
+            L[i][j] = (matrix[i][j] - sumL2) / (L[j][j]);
+            L_T[j][i] = L[i][j];
+        }
+    }
+
+
+    return std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>>(L, L_T);
+
+}
+
+
+template<typename T>
+double AGHMatrix<T>::determinant() {
+
+    if (get_rows() != get_cols()) {
+        exit(-1);
+    }
+
+    double d = 1.0;
+
+    for (int i = 1; i < matrix.size(); i++) {
+
+        for (int j = 0; j < matrix.size(); j++) {
+
+            double t = -matrix[j][i] / matrix[i][i];
+            d *= t;
+            for (int k = 0; k < matrix.size(); k++) {
+                matrix[j][k] = t * matrix[i][k];
+            }
+        }
+    }
+
+
+    double diagonal_quotient = 1.0;
+    for (int i = 0; i < matrix.size(); i++) {
+        diagonal_quotient *= matrix[i][i];
+    }
+
+    return diagonal_quotient / d;
+
+}
+
+
+
+// Printing matrix
 template<typename T>
 std::ostream &operator<<(std::ostream &stream, const AGHMatrix<T> &matrix) {
     for (int i = 0; i < matrix.get_rows(); i++) {
