@@ -3,6 +3,8 @@
 
 #define wrong_type_of_matrix 0
 
+std::vector<std::vector<double>> MakeMatrixLowerTriangular(AGHMatrix<double> matrix);
+
 // Parameter Constructor
 template<typename T>
 AGHMatrix<T>::AGHMatrix(const std::vector<std::vector<T>> &mat) {
@@ -161,7 +163,7 @@ AGHMatrix<T> AGHMatrix<T>::operator*(const AGHMatrix<T> &rhs) {
 }
 
 template<typename T>
-bool AGHMatrix<T>::isSymmetric() {
+bool AGHMatrix<T>::IsSymmetric() {
 
     if (get_cols() != get_rows()) {
         exit(-1);
@@ -180,21 +182,42 @@ bool AGHMatrix<T>::isSymmetric() {
 }
 
 template<typename T>
-void AGHMatrix<T>::make_matrix_lower_triangular() {
+void AGHMatrix<T>::MakeMatrixLowerTriangular() {
 
 
-    for (int i = 1; i < matrix.size(); i++) {
+    for (int i = 0; i <= matrix.size() - 1; i++) {
 
-        for (int j = 0; j < matrix.size(); j++) {
+        for (int j = i + 1; j < matrix.size(); j++) {
 
             double t = -matrix[j][i] / matrix[i][i];
 
-            for (int k = 0; k < matrix.size(); k++) {
-                matrix[j][k] = t * matrix[i][k];
+            for (int k = i; k <= matrix.size(); k++) {
+                matrix[j][k] += t * matrix[i][k];
             }
         }
     }
+}
 
+
+std::vector<double> SolveWithGaussianElimination(AGHMatrix<double> A) {
+
+    A.MakeMatrixLowerTriangular();
+
+    std::vector<double> X(A.get_cols(), 0.0);
+
+    for (auto i = static_cast<int>(A.get_rows() - 1); i >= 0; i--) {
+
+        double sum = A(i
+                ,A.get_cols() - 1);
+        for (auto j = static_cast<int>(A.get_cols() - 1); j >= i + 1; j--) {
+            sum -= A(i, j) * X[j];
+        }
+
+        X[i] = sum / A(i, i);
+
+    }
+
+    return X;
 }
 
 
@@ -263,7 +286,7 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> AG
 
 
 template<typename T>
-double AGHMatrix<T>::determinant() {
+double AGHMatrix<T>::Determinant() {
 
     if (get_rows() != get_cols()) {
         exit(-1);
@@ -292,7 +315,6 @@ double AGHMatrix<T>::determinant() {
     return diagonal_quotient / d;
 
 }
-
 
 
 // Printing matrix

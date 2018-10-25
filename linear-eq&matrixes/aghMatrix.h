@@ -35,15 +35,17 @@ public:
     unsigned get_rows() const;
     unsigned get_cols() const;
 
-    bool isSymmetric();
-
-    double determinant();
-
-    void make_matrix_lower_triangular();
 
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> LUDecomposition();
 
     std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> CholeskyDecomposition();
+
+    bool IsSymmetric();
+
+    double Determinant();
+
+    void MakeMatrixLowerTriangular();
+
 };
 
 #include "aghMatrix.cpp"
