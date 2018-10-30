@@ -166,12 +166,13 @@ template<typename T>
 bool AGHMatrix<T>::IsSymmetric() {
 
     if (get_cols() != get_rows()) {
-        exit(-1);
+        std::cout << get_cols() << " " << get_rows() << std::endl;
+        return false;
     }
 
     for (unsigned i = 0; i < get_rows(); i++) {
 
-        for (unsigned j = 0; j < get_cols(); j++) {
+        for (unsigned j = i; j < get_cols(); j++) {
             if (matrix[i][j] != matrix[j][i]) {
                 return false;
             }
@@ -189,7 +190,9 @@ void AGHMatrix<T>::MakeMatrixLowerTriangular() {
 
         for (int j = i + 1; j < matrix.size(); j++) {
 
-            double t = -matrix[j][i] / matrix[i][i];
+            double t = 0.0;
+            if (matrix[i][i] != 0)
+                t = -matrix[j][i] / matrix[i][i];
 
             for (int k = i; k <= matrix.size(); k++) {
                 matrix[j][k] += t * matrix[i][k];
@@ -207,8 +210,7 @@ std::vector<double> SolveWithGaussianElimination(AGHMatrix<double> A) {
 
     for (auto i = static_cast<int>(A.get_rows() - 1); i >= 0; i--) {
 
-        double sum = A(i
-                ,A.get_cols() - 1);
+        double sum = A(i, A.get_cols() - 1);
         for (auto j = static_cast<int>(A.get_cols() - 1); j >= i + 1; j--) {
             sum -= A(i, j) * X[j];
         }
@@ -259,23 +261,24 @@ std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> AG
 
     for (int i = 0; i < matrix.size(); i++) {
 
-        for (int j = i + 1; j < matrix.size(); j++) {
+        for (int j = 0; j <= i; j++) {
 
             double sumL1 = 0.0;
             double sumL2 = 0.0;
 
-            for (int k = 1; k < j - 1; k++) {
-                sumL1 += L[j][k] * L[j][k];
-                sumL2 += L[i][k] * L[j][k];
-            }
+            if (j == i) {
+                for (int k = 0; k < j; k++) {
+                    sumL1 += L[j][k] * L[j][k];
+                }
+                L[j][j] = L_T[j][j] = sqrt(matrix[j][j] - sumL1);
 
-            if (i > j) {
-                L[j][j] = sqrt(matrix[j][j] - sumL1);
-                L_T[j][j] = L[j][j];
-            }
 
-            L[i][j] = (matrix[i][j] - sumL2) / (L[j][j]);
-            L_T[j][i] = L[i][j];
+            } else {
+                for (int k = 0; k < j; k++) {
+                    sumL2 += L[i][k] * L[j][k];
+                }
+                L[i][j] = L_T[j][i] = (matrix[i][j] - sumL2) / (L[j][j]);
+            }
         }
     }
 
@@ -294,14 +297,19 @@ double AGHMatrix<T>::Determinant() {
 
     double d = 1.0;
 
-    for (int i = 1; i < matrix.size(); i++) {
+    for (int i = 0; i <= matrix.size() - 1; i++) {
 
-        for (int j = 0; j < matrix.size(); j++) {
+        for (int j = i + 1; j < matrix.size(); j++) {
 
-            double t = -matrix[j][i] / matrix[i][i];
+            double t = 0.0;
+
+            if (matrix[i][i] != 0)
+                t = -matrix[j][i] / matrix[i][i];
+
             d *= t;
-            for (int k = 0; k < matrix.size(); k++) {
-                matrix[j][k] = t * matrix[i][k];
+
+            for (int k = i; k <= matrix.size(); k++) {
+                matrix[j][k] += t * matrix[i][k];
             }
         }
     }
@@ -312,8 +320,10 @@ double AGHMatrix<T>::Determinant() {
         diagonal_quotient *= matrix[i][i];
     }
 
-    return diagonal_quotient / d;
-
+    if (d != 0.0)
+        return diagonal_quotient / d;
+    else
+        return 0.0;
 }
 
 
