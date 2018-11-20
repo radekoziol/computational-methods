@@ -1,61 +1,96 @@
 #include <iostream>
 #include "aghMatrix.h"
 
+
+double fRand(double fMin, double fMax) {
+    double f = (double) rand() / RAND_MAX;
+    return fMin + f * (fMax - fMin);
+}
+
+void printWithRows(AGHMatrix<double> matrix) {
+
+    std::cout << std::endl;
+
+    for (unsigned int i = 0; i < matrix.get_rows(); i++) {
+
+        std::cout << std::endl;
+        std::cout << "R: " << i << std::endl;
+        std::cout << std::endl;
+
+        for (unsigned int j = 0; j < matrix.get_cols(); j++) {
+
+            std::cout << matrix(i, j) << std::endl;
+
+        }
+
+    }
+
+    std::cout << std::endl;
+
+}
+
+AGHMatrix<double> generateMatrix(unsigned int rows, unsigned int columns) {
+
+
+    std::vector<std::vector<double>> A(rows, std::vector<double>(columns, 0.0));
+    AGHMatrix<double> B = A;
+
+    bool firstIteration = true;
+    while (!B.isDiagonallyDominant() || firstIteration) {
+        firstIteration = false;
+
+        for (unsigned int i = 0; i < rows; i++) {
+
+            for (unsigned int j = 0; j < columns; j++) {
+                B(i, j) = fRand(-1.0, 5.0);
+            }
+        }
+    }
+
+
+    return B;
+}
+
+
 int main() {
-//     initialize matrices using init value
-//    AGHMatrix<double> mat1(4, 4, 2.3);
 
-//    AGHMatrix<double> mat5(4, 4, 4.88);
-//    AGHMatrix<double> mat6(4, 4, 0.12);
-//
-//
-//    AGHMatrix<double> mat4 = mat1 * mat2;
-//    std::cout << mat4 << std::endl;
-//
-//    AGHMatrix<double> mat3 = mat5 + mat6;
-//    std::cout << mat3 << std::endl;
-//
-//    std::cout << "Is symetric: " << std::boolalpha << mat3.IsSymmetric() << std::endl;
-//    std::cout << "Determinant: " << mat5.Determinant() << std::endl;
 
-//    std::vector<std::vector<double>> A{{4.0, 12.0, -16.0},
-//                                       {12.0, 37.0,  -43.0},
-//                                       {-16.0, -43.0, 98.0 }};
-//
-//    AGHMatrix<double> cholesky(A);
-//
-//
-//    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> pair = cholesky.CholeskyDecomposition();
-//    AGHMatrix<double> mat5(pair.first);
-//    AGHMatrix<double> mat6(pair.second);
+    for (unsigned int i = 2; i <= 32; i = i + 3) {
+        std::cout << std::endl;
+        std::cout << 5 << "x" << 5 << std::endl;
 
-//    std::pair<std::vector<std::vector<double>>, std::vector<std::vector<double>>> pair2 = mat1.LUDecomposition();
-//    AGHMatrix<double> mat7(pair2.first);
-//    AGHMatrix<double> mat8(pair2.second);
-//
+        const AGHMatrix<double> &A = generateMatrix(5, 5 + 1);
 
-//    std::cout << mat5;
-//    std::cout << mat6;
-//
-//    std::cout << mat7;
-//    std::cout << mat8;
+        printWithRows(A);
 
-    // initialize matrix using specified values
-//    std::vector<std::vector<double>> A{{4.0, -2.0, 4.0, -2.0, 8.0},
-//                                       {3.0, 1.0,  4.0, 2.0,  7.0},
-//                                       {2.0, 4.0,  2.0, 1.0,  10.0},
-//                                       {2.0, -2.0, 4.0, 2.0,  2.0}};
-//
-//    std::vector<double> X = SolveWithGaussianElimination(AGHMatrix<double>(A));
-//
-//    AGHMatrix<double> tmp = A;
-//
-//    tmp.MakeMatrixLowerTriangular();
-//    std::cout << tmp;
-//
-//    for (int i = 0; i < X.size() - 1; i++)
-//        std::cout << X[i] << std::endl;
+        std::cout << std::endl;
+        std::cout << "Real solution" << std::endl;
+        std::vector<double> X = SolveWithGaussianElimination(A);
+        for (unsigned int j = 0; j < X.size() - 1; j++)
+            std::cout << X[j] << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Jacobi approximation" << std::endl;
+        std::vector<double> X1 = SolveWithJacobiMethod(A);
+        for (unsigned int j = 0; j < X.size() - 1; j++)
+            std::cout << X1[j] << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Gaus-Seidel approximation" << std::endl;
+        std::vector<double> X2 = SolveWithGaussSeidelMethod(A);
+        for (unsigned int j = 0; j < X.size() - 1; j++)
+            std::cout << X2[j] << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "SOR approximation" << std::endl;
+        std::vector<double> X3 = SolveWithSORMethod(A, 2.0);
+        for (unsigned int j = 0; j < X.size() - 1; j++)
+            std::cout << X3[j] << std::endl;
+
+
+    }
 
 
     return 0;
 }
+

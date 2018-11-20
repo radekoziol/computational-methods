@@ -1,4 +1,5 @@
 #include <cmath>
+#include <tuple>
 #include "aghMatrix.h"
 
 #define wrong_type_of_matrix 0
@@ -324,6 +325,184 @@ double AGHMatrix<T>::Determinant() {
         return diagonal_quotient / d;
     else
         return 0.0;
+}
+
+template<typename T>
+bool AGHMatrix<T>::isDiagonallyDominant() {
+
+
+    for (int i = 0; i < get_rows(); i++) {
+
+        double sum = 0.0;
+        for (int j = 0; j < get_cols() - 1; j++) {
+            if (j != i) {
+                sum += matrix[i][j];
+            }
+        }
+
+        if (matrix[i][i] < sum) {
+            return false;
+        }
+    };
+
+
+    return true;
+}
+
+
+template<typename T>
+std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>, std::vector<std::vector<double>>>
+AGHMatrix<T>::DLUDecomposition() {
+
+    std::vector<std::vector<double>> D(matrix.size(), std::vector<double>(matrix.size(), 0.0));
+    std::vector<std::vector<double>> L(matrix.size(), std::vector<double>(matrix.size(), 0.0));
+    std::vector<std::vector<double>> U(matrix.size(), std::vector<double>(matrix.size(), 0.0));
+
+    for (int i = 0; i < matrix.size(); i++) {
+
+
+        for (int j = 0; j < matrix.size(); j++) {
+            if (i == j) {
+                D[i][j] = matrix[i][j];
+            } else if (i < j) {
+                L[i][j] = matrix[i][j];
+            } else {
+                U[i][j] = matrix[i][j];
+            }
+        }
+
+    };
+
+
+    return std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>, std::vector<std::vector<double>>>(
+            D, L, U);
+}
+
+
+std::vector<double> SolveWithJacobiMethod(AGHMatrix<double> A) {
+
+    std::vector<double> X_prev(A.get_cols(), 0.0);
+    std::vector<double> X_next(A.get_cols(), 0.0);
+
+    if (!A.isDiagonallyDominant()) {
+        exit(-1);
+    }
+
+
+    for (int c = 1; c <= A.get_cols(); c++) {
+
+        for (unsigned int k = 0; k < A.get_rows(); k++) {
+
+            double sum = 0.0;
+
+            for (unsigned int j = 1; j < A.get_rows(); j++) {
+                if (j != k)
+                    sum += A(k, j) * X_prev[j];
+
+            }
+
+
+            X_next[k] = (A(k, A.get_cols() - 1) - sum) / A(k, k);
+
+        }
+
+        std::cout << "Iteration no "  << c << std::endl;
+
+        for (unsigned int j = 0; j < X_next.size() - 1; j++)
+            std::cout << X_next[j] << std::endl;
+
+        X_prev = X_next;
+
+    }
+
+    return X_next;
+
+}
+
+std::vector<double> SolveWithGaussSeidelMethod(AGHMatrix<double> A) {
+
+    std::vector<double> X_prev(A.get_cols(), 0.0);
+    std::vector<double> X_next(A.get_cols(), 0.0);
+
+    if (!A.isDiagonallyDominant()) {
+        exit(-1);
+    }
+
+
+    for (int c = 1; c <= A.get_cols(); c++) {
+
+        for (unsigned int k = 0; k < A.get_rows(); k++) {
+
+            double sum = 0.0;
+
+            for (unsigned int j = 0; j < A.get_rows(); j++) {
+
+                if (j < k) {
+                    sum += A(k, j) * X_prev[j];
+                } else if (j > k) {
+                    sum += A(k, j) * X_next[j];
+                }
+
+            }
+
+            X_next[k] = (A(k, A.get_cols() - 1) - sum) / A(k, k);
+        }
+
+
+        std::cout << "Iteration no "  << c << std::endl;
+
+        for (unsigned int j = 0; j < X_next.size() - 1; j++)
+            std::cout << X_next[j] << std::endl;
+
+        X_prev = X_next;
+
+
+    }
+
+    return X_next;
+
+}
+
+std::vector<double> SolveWithSORMethod(AGHMatrix<double> A, double rlx) {
+
+    std::vector<double> X_prev(A.get_cols(), 0.0);
+    std::vector<double> X_next(A.get_cols(), 0.0);
+
+    if (!A.isDiagonallyDominant()) {
+        exit(-1);
+    }
+
+
+    for (int c = 1; c <= A.get_cols(); c++) {
+
+        for (unsigned int k = 0; k < A.get_rows(); k++) {
+
+            double sum = 0.0;
+
+            for (unsigned int j = 0; j < A.get_rows(); j++) {
+
+                if (j < k) {
+                    sum += A(k, j) * X_prev[j];
+                } else if (j > k) {
+                    sum += A(k, j) * X_next[j];
+                }
+
+            }
+
+            X_next[k] = (1 - rlx) * X_prev[k] + ((A(k, A.get_cols() - 1) - sum) * rlx) / A(k, k);
+        }
+
+        std::cout << "Iteration no "  << c << std::endl;
+
+        for (unsigned int j = 0; j < X_next.size() - 1; j++)
+            std::cout << X_next[j] << std::endl;
+
+        X_prev = X_next;
+
+    }
+
+    return X_next;
+
 }
 
 
