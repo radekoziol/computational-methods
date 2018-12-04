@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <random>
 #include "aghIntegration.h"
 
 
@@ -48,4 +49,37 @@ double aghIntegration::integrateWithSimpson(double from, double to, unsigned int
 
     return (fun(from) + fun(to) + sum) * range / 6;
 
+}
+
+double aghIntegration::calculatePiWithMontCarlo(unsigned int pointNumber) {
+
+    std::default_random_engine gen;
+    std::uniform_real_distribution<double> distr;
+
+    int hits = 0;
+
+    for (int i = 0; i < pointNumber; i++) {
+        double x = distr(gen);
+        double y = distr(gen);
+        double lengthToCenter = sqrt(x * x + y * y);
+        if (lengthToCenter <= 1) hits++;
+    }
+
+
+    return double(hits) / pointNumber * 4;
+}
+
+double aghIntegration::integrateWithMonteCarlo(double from, double to, unsigned int pointNumber) {
+
+    std::default_random_engine gen;
+    std::uniform_real_distribution<double> distr(from,to);
+
+    double sum = 0.0;
+
+    for (int i = 0; i < pointNumber; i++) {
+        double x = distr(gen);
+        sum += fun(x);
+    }
+
+    return sum * (to - from) / (pointNumber);
 }
